@@ -13,7 +13,7 @@ import java.util.*
 private val logger = KotlinLogging.logger {}
 
 open class EVAProtocol(
-    private var community: Community,
+    private var community: EVACommunity,
     scope: CoroutineScope,
     var windowSizeInBlocks: Int = WINDOW_SIZE_IN_BLOCKS,
     var retransmitIntervalInSec: Int = RETRANSMIT_INTERVAL_IN_SEC,
@@ -784,6 +784,25 @@ open class EVAProtocol(
             stoppedIncoming[peer.key]!!.contains(transfer.id)
         } else false
 
+    }
+
+    /**
+     * EVA protocol callbacks for other communities and classes
+     */
+    fun setOnEVASendCompleteCallback(callback: (peer: Peer, info: String, nonce: ULong) -> Unit) {
+        onSendCompleteCallback = callback
+    }
+
+    fun setOnEVAReceiveProgressCallback(callback: (peer: Peer, info: String, progress: TransferProgress) -> Unit) {
+        onReceiveProgressCallback = callback
+    }
+
+    fun setOnEVAReceiveCompleteCallback(callback: (peer: Peer, info: String, id: String, data: ByteArray?) -> Unit) {
+        onReceiveCompleteCallback = callback
+    }
+
+    fun setOnEVAErrorCallback(callback: (peer: Peer, exception: TransferException) -> Unit) {
+        onErrorCallback = callback
     }
 
     companion object {

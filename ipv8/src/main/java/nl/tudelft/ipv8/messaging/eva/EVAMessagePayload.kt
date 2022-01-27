@@ -15,7 +15,7 @@ data class EVAWriteRequestPayload(
     var blockCount: UInt,
     var blockSize: UInt,
     var windowSize: UInt,
-) : EVAMessagePayload(Community.MessageId.EVA_WRITE_REQUEST), Serializable {
+) : EVAMessagePayload(EVACommunity.MessageId.EVA_WRITE_REQUEST), Serializable {
     override fun serialize(): ByteArray {
         return serializeVarLen(info.toByteArray(Charsets.UTF_8)) +
             serializeVarLen(id.toByteArray(Charsets.UTF_8)) +
@@ -63,7 +63,7 @@ data class EVAAcknowledgementPayload(
     var nonce: ULong,
     var ackWindow: UInt,
     var unAckedBlocks: ByteArray
-) : EVAMessagePayload(Community.MessageId.EVA_ACKNOWLEDGEMENT), Serializable {
+) : EVAMessagePayload(EVACommunity.MessageId.EVA_ACKNOWLEDGEMENT), Serializable {
     override fun serialize(): ByteArray {
         return serializeULong(nonce) +
             serializeUInt(ackWindow) +
@@ -115,7 +115,7 @@ data class EVADataPayload(
     var blockNumber: UInt,
     var nonce: ULong,
     var data: ByteArray
-) : EVAMessagePayload(Community.MessageId.EVA_DATA), Serializable {
+) : EVAMessagePayload(EVACommunity.MessageId.EVA_DATA), Serializable {
     override fun serialize(): ByteArray {
         return serializeUInt(blockNumber) +
             serializeULong(nonce) +
@@ -166,7 +166,7 @@ data class EVADataPayload(
 data class EVAErrorPayload(
     var info: String,
     var message: String
-) : EVAMessagePayload(Community.MessageId.EVA_ERROR), Serializable {
+) : EVAMessagePayload(EVACommunity.MessageId.EVA_ERROR), Serializable {
     override fun serialize(): ByteArray {
         return serializeVarLen(info.toByteArray(Charsets.UTF_8)) +
             serializeVarLen(message.toByteArray(Charsets.UTF_8))

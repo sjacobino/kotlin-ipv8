@@ -3,10 +3,7 @@ package nl.tudelft.ipv8.messaging.eva
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
-import nl.tudelft.ipv8.BaseCommunityTest
-import nl.tudelft.ipv8.Community
-import nl.tudelft.ipv8.Peer
-import nl.tudelft.ipv8.TestCommunity
+import nl.tudelft.ipv8.*
 import nl.tudelft.ipv8.messaging.Packet
 import nl.tudelft.ipv8.peerdiscovery.Network
 import org.junit.Assert.assertEquals
@@ -16,13 +13,13 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 
 class CommunityEVATest : BaseCommunityTest() {
-    private fun getCommunity(): TestCommunity {
+    private fun getCommunity(): EVATestCommunity {
         val myPrivateKey = getPrivateKey()
         val myPeer = Peer(myPrivateKey)
         val endpoint = getEndpoint()
         val network = Network()
 
-        val community = TestCommunity()
+        val community = EVATestCommunity()
         community.myPeer = myPeer
         community.endpoint = endpoint
         community.network = network
@@ -38,9 +35,9 @@ class CommunityEVATest : BaseCommunityTest() {
 
         val community = getCommunity()
         val handler = mockk<(Packet) -> Unit>(relaxed = true)
-        community.messageHandlers[Community.MessageId.EVA_WRITE_REQUEST] = handler
+        community.messageHandlers[EVACommunity.MessageId.EVA_WRITE_REQUEST] = handler
 
-        val info = Community.EVAId.EVA_PEERCHAT_ATTACHMENT
+        val info = EVATestCommunity.EVAId.EVA_PEERCHAT_ATTACHMENT
         val id = "0123456789abcdefghijklmnopqrstuvw"
         val nonce = (0..EVAProtocol.MAX_NONCE).random().toULong()
         val dataString = "Lorem ipsum dolor sit amet"
@@ -71,7 +68,7 @@ class CommunityEVATest : BaseCommunityTest() {
         val community = spyk(getCommunity())
 
         community.createEVAWriteRequest(
-            Community.EVAId.EVA_PEERCHAT_ATTACHMENT,
+            EVATestCommunity.EVAId.EVA_PEERCHAT_ATTACHMENT,
             "0123456789",
             1234.toULong(),
             10000.toULong(),
@@ -92,7 +89,7 @@ class CommunityEVATest : BaseCommunityTest() {
 
         val community = getCommunity()
         val handler = mockk<(Packet) -> Unit>(relaxed = true)
-        community.messageHandlers[Community.MessageId.EVA_ACKNOWLEDGEMENT] = handler
+        community.messageHandlers[EVACommunity.MessageId.EVA_ACKNOWLEDGEMENT] = handler
 
         community.createEVAAcknowledgement(
             nonce = (0..EVAProtocol.MAX_NONCE).random().toULong(),
@@ -129,7 +126,7 @@ class CommunityEVATest : BaseCommunityTest() {
 
         val community = getCommunity()
         val handler = mockk<(Packet) -> Unit>(relaxed = true)
-        community.messageHandlers[Community.MessageId.EVA_DATA] = handler
+        community.messageHandlers[EVACommunity.MessageId.EVA_DATA] = handler
 
         val blockNumber = 2
         val nonce = (0..EVAProtocol.MAX_NONCE).random().toULong()
@@ -180,9 +177,9 @@ class CommunityEVATest : BaseCommunityTest() {
 
         val community = getCommunity()
         val handler = mockk<(Packet) -> Unit>(relaxed = true)
-        community.messageHandlers[Community.MessageId.EVA_ERROR] = handler
+        community.messageHandlers[EVACommunity.MessageId.EVA_ERROR] = handler
 
-        val info = Community.EVAId.EVA_PEERCHAT_ATTACHMENT
+        val info = EVATestCommunity.EVAId.EVA_PEERCHAT_ATTACHMENT
         val message = "Lorem ipsum dolor sit amet"
 
         community.createEVAError(
@@ -202,7 +199,7 @@ class CommunityEVATest : BaseCommunityTest() {
         val community = spyk(getCommunity())
 
         community.createEVAError(
-            info = Community.EVAId.EVA_PEERCHAT_ATTACHMENT,
+            info = EVATestCommunity.EVAId.EVA_PEERCHAT_ATTACHMENT,
             message = "Lorem ipsum dolor sit amet"
         ).let { packet ->
             community.onEVAErrorPacket(Packet(myPeer.address, packet))
@@ -219,7 +216,7 @@ class CommunityEVATest : BaseCommunityTest() {
         val previousRequest = community.myPeer.lastRequest
 
         community.createEVAWriteRequest(
-            Community.EVAId.EVA_PEERCHAT_ATTACHMENT,
+            EVATestCommunity.EVAId.EVA_PEERCHAT_ATTACHMENT,
             "01245678",
             (0..EVAProtocol.MAX_NONCE).random().toULong(),
             "lorem ipsum".toByteArray().size.toULong(),
@@ -293,7 +290,7 @@ class CommunityEVATest : BaseCommunityTest() {
         val previousRequest = community.myPeer.lastRequest
 
         community.createEVAError(
-            Community.EVAId.EVA_PEERCHAT_ATTACHMENT,
+            EVATestCommunity.EVAId.EVA_PEERCHAT_ATTACHMENT,
             "Error occurred"
         ).let { packet ->
             community.endpoint.send(community.myPeer, packet)
@@ -313,7 +310,7 @@ class CommunityEVATest : BaseCommunityTest() {
         community.load()
 
         assertEquals(null, community.evaProtocol?.onSendCompleteCallback)
-        community.setOnEVASendCompleteCallback { _, _, _ -> }
+        community.evaProtocol!!.setOnEVASendCompleteCallback { _, _, _ -> }
         assertNotEquals(null, community.evaProtocol?.onSendCompleteCallback)
 
         community.unload()
@@ -325,7 +322,7 @@ class CommunityEVATest : BaseCommunityTest() {
         community.load()
 
         assertEquals(null, community.evaProtocol?.onReceiveCompleteCallback)
-        community.setOnEVAReceiveCompleteCallback { _, _, _, _ -> }
+        community.evaProtocol!!.setOnEVAReceiveCompleteCallback { _, _, _, _ -> }
         assertNotEquals(null, community.evaProtocol?.onReceiveCompleteCallback)
 
         community.unload()
@@ -337,7 +334,7 @@ class CommunityEVATest : BaseCommunityTest() {
         community.load()
 
         assertEquals(null, community.evaProtocol?.onReceiveProgressCallback)
-        community.setOnEVAReceiveProgressCallback { _, _, _ -> }
+        community.evaProtocol!!.setOnEVAReceiveProgressCallback { _, _, _ -> }
         assertNotEquals(null, community.evaProtocol?.onReceiveProgressCallback)
 
         community.unload()
@@ -349,7 +346,7 @@ class CommunityEVATest : BaseCommunityTest() {
         community.load()
 
         assertEquals(null, community.evaProtocol?.onErrorCallback)
-        community.setOnEVAErrorCallback { _, _ ->  }
+        community.evaProtocol!!.setOnEVAErrorCallback { _, _ ->  }
         assertNotEquals(null, community.evaProtocol?.onErrorCallback)
 
         community.unload()
