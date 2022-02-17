@@ -1,5 +1,6 @@
 package nl.tudelft.ipv8.attestation.wallet
 
+import mu.KotlinLogging
 import nl.tudelft.ipv8.attestation.Authority
 import nl.tudelft.ipv8.attestation.WalletAttestation
 import nl.tudelft.ipv8.attestation.wallet.cryptography.bonehexact.BonehPrivateKey
@@ -8,6 +9,8 @@ import nl.tudelft.ipv8.keyvault.PublicKey
 import nl.tudelft.ipv8.keyvault.defaultCryptoProvider
 import nl.tudelft.ipv8.messaging.*
 import nl.tudelft.ipv8.util.hexToBytes
+
+private val logger = KotlinLogging.logger {}
 
 class AttestationBlob(
     val attestationHash: ByteArray,
@@ -19,6 +22,7 @@ class AttestationBlob(
     val attestorKey: PublicKey?,
 ) : Serializable {
     override fun serialize(): ByteArray {
+        logger.error { "Serializing attestation. Format: $idFormat, size: ${blob.size}, metadata: ${metadata ?: "empty"}" }
         // Keys are serialized using varlen here but they are fixed length
         return (
             attestationHash + serializeVarLen(blob) + serializeVarLen(key) + serializeVarLen(idFormat.toByteArray()) +
@@ -33,10 +37,10 @@ class AttestationBlob(
 
     companion object Deserializer : Deserializable<AttestationBlob> {
         override fun deserialize(buffer: ByteArray, offset: Int): Pair<AttestationBlob, Int> {
-            var localOffset = 0
+            var localOffset = offset
 
-            val attestationHash = buffer.copyOfRange(offset + localOffset,
-                offset + localOffset + SERIALIZED_SHA1_HASH_SIZE)
+            val attestationHash = buffer.copyOfRange(localOffset,
+                localOffset + SERIALIZED_SHA1_HASH_SIZE)
             localOffset += SERIALIZED_SHA1_HASH_SIZE
 
             val (blob, blobSize) = deserializeVarLen(buffer, localOffset)
@@ -48,14 +52,14 @@ class AttestationBlob(
             val (idFormatBytes, idFormatSize) = deserializeVarLen(buffer, localOffset)
             localOffset += idFormatSize
 
-            return if (buffer.lastIndex > offset + localOffset) {
-                val (metadataBytes, metadataSize) = deserializeVarLen(buffer, offset + localOffset)
+            return if (buffer.lastIndex > localOffset) {
+                val (metadataBytes, metadataSize) = deserializeVarLen(buffer, localOffset)
                 localOffset += metadataSize
 
-                val (signature, signatureSize) = deserializeVarLen(buffer, offset + localOffset)
+                val (signature, signatureSize) = deserializeVarLen(buffer, localOffset)
                 localOffset += signatureSize
 
-                val (attestorKey, attestorkeySize) = deserializeVarLen(buffer, offset + localOffset)
+                val (attestorKey, attestorkeySize) = deserializeVarLen(buffer, localOffset)
                 localOffset += attestorkeySize
 
                 val attestationBlob = AttestationBlob(

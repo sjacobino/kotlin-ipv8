@@ -17,7 +17,6 @@ abstract class EVACommunity(
 
     override fun load() {
         super.load()
-        logger.error { "Loading EVA Community for $simpleName. Enabled: $evaProtocolEnabled" }
         if (evaProtocolEnabled)
             evaProtocol = EVAProtocol(this, scope)
     }
