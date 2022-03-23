@@ -59,8 +59,7 @@ object TransactionEncoding {
      */
     fun decode(buffer: ByteArray, offset: Int = 0): Pair<Int, Any?> {
         val version = buffer[offset]
-        @Suppress("DEPRECATION")
-        if (version.toChar() == VERSION_A) {
+        if (version.toInt().toChar() == VERSION_A) {
             return decodeValue(buffer, offset + 1)
         } else {
             throw TransactionSerializationException("Unknown version found: $version")
@@ -74,8 +73,7 @@ object TransactionEncoding {
         }
         val count = buffer.copyOfRange(offset, index).toString(Charsets.UTF_8).toInt()
 
-        @Suppress("DEPRECATION")
-        return when (val type = buffer[index].toChar().toString()) {
+        return when (val type = buffer[index].toInt().toChar().toString()) {
             TYPE_INT -> decodeInt(buffer, index + 1, count)
             TYPE_LONG -> decodeLong(buffer, index + 1, count)
             TYPE_STRING, TYPE_BYTES -> decodeString(buffer, index + 1, count)

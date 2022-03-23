@@ -11,14 +11,11 @@ import java.math.BigInteger
 import java.util.*
 import kotlin.Exception
 
-@Suppress("DEPRECATION")
-val GENESIS_HASH = ByteArray(32) { '0'.toByte() }
+val GENESIS_HASH = ByteArray(32) { '0'.code.toByte() }
 val GENESIS_SEQ = 1u
 val UNKNOWN_SEQ = 0u
-@Suppress("DEPRECATION")
-val EMPTY_SIG = ByteArray(64) { '0'.toByte() }
-@Suppress("DEPRECATION")
-val EMPTY_PK = ByteArray(74) { '0'.toByte() }
+val EMPTY_SIG = ByteArray(64) { '0'.code.toByte() }
+val EMPTY_PK = ByteArray(74) { '0'.code.toByte() }
 val ANY_COUNTERPARTY_PK = EMPTY_PK
 
 typealias TrustChainTransaction = Map<*, *>

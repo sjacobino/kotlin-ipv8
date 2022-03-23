@@ -108,7 +108,13 @@ class NetworkServiceDiscovery(
                 logger.info("Service resolved: $serviceInfo")
 
                 val peer = overlay.myPeer
-                val address = IPv4Address(serviceInfo.host.hostAddress, serviceInfo.port)
+
+                if (serviceInfo.host.hostAddress == null) {
+                    logger.debug { "No address discovered" }
+                    return
+                }
+
+                val address = IPv4Address(serviceInfo.host.hostAddress!!, serviceInfo.port)
 
                 if (overlay.myEstimatedLan != address) {
                     logger.debug { "Discovered address: $address" }

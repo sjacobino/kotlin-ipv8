@@ -344,8 +344,7 @@ abstract class Community : Overlay {
         recipient: Peer? = null
     ): ByteArray {
         var packet = prefix
-        @Suppress("DEPRECATION")
-        packet += messageId.toChar().toByte()
+        packet += messageId.toChar().code.toByte()
 
         if (encrypt && recipient == null) {
             throw IllegalArgumentException("Recipient must be provided for encryption")
