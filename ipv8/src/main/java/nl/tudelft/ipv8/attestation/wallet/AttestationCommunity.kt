@@ -508,6 +508,7 @@ class AttestationCommunity(val database: AttestationStore) : Community() {
 
     }
 
+    @OptIn(ExperimentalUnsignedTypes::class)
     private fun onChallengeResponse(
         peer: Peer,
         payload: ChallengeResponsePayload,

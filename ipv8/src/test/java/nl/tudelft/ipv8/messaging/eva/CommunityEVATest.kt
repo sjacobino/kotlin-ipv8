@@ -3,7 +3,9 @@ package nl.tudelft.ipv8.messaging.eva
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
-import nl.tudelft.ipv8.*
+import nl.tudelft.ipv8.BaseCommunityTest
+import nl.tudelft.ipv8.EVATestCommunity
+import nl.tudelft.ipv8.Peer
 import nl.tudelft.ipv8.messaging.Packet
 import nl.tudelft.ipv8.peerdiscovery.Network
 import org.junit.Assert.assertEquals
@@ -53,7 +55,7 @@ class CommunityEVATest : BaseCommunityTest() {
             dataSize,
             blockCount,
             EVAProtocol.BLOCK_SIZE.toUInt(),
-            EVAProtocol.WINDOW_SIZE_IN_BLOCKS.toUInt()
+            EVAProtocol.WINDOW_SIZE.toUInt()
         ).let { packet ->
             community.onPacket(Packet(myPeer.address, packet))
         }
@@ -74,7 +76,7 @@ class CommunityEVATest : BaseCommunityTest() {
             10000.toULong(),
             10.toUInt(),
             EVAProtocol.BLOCK_SIZE.toUInt(),
-            EVAProtocol.WINDOW_SIZE_IN_BLOCKS.toUInt()
+            EVAProtocol.WINDOW_SIZE.toUInt()
         ).let { packet ->
             community.onEVAWriteRequestPacket(Packet(myPeer.address, packet))
         }
@@ -222,7 +224,7 @@ class CommunityEVATest : BaseCommunityTest() {
             "lorem ipsum".toByteArray().size.toULong(),
             5.toUInt(),
             EVAProtocol.BLOCK_SIZE.toUInt(),
-            EVAProtocol.WINDOW_SIZE_IN_BLOCKS.toUInt()
+            EVAProtocol.WINDOW_SIZE.toUInt()
         ).let { packet ->
             community.endpoint.send(community.myPeer, packet)
         }

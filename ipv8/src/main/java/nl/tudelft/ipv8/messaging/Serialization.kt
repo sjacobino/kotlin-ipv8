@@ -44,6 +44,7 @@ fun deserializeUShort(buffer: ByteArray, offset: Int = 0): Int {
     return (((buffer[offset].toInt() and 0xFF) shl 8) or (buffer[offset + 1].toInt() and 0xFF))
 }
 
+@OptIn(ExperimentalUnsignedTypes::class)
 fun serializeUInt(value: UInt): ByteArray {
     val bytes = UByteArray(SERIALIZED_UINT_SIZE)
     for (i in 0 until SERIALIZED_UINT_SIZE) {
@@ -52,6 +53,7 @@ fun serializeUInt(value: UInt): ByteArray {
     return bytes.toByteArray()
 }
 
+@OptIn(ExperimentalUnsignedTypes::class)
 fun deserializeUInt(buffer: ByteArray, offset: Int = 0): UInt {
     val ubuffer = buffer.toUByteArray()
     var result = 0u
@@ -61,6 +63,7 @@ fun deserializeUInt(buffer: ByteArray, offset: Int = 0): UInt {
     return result
 }
 
+@OptIn(ExperimentalUnsignedTypes::class)
 fun serializeULong(value: ULong): ByteArray {
     val bytes = UByteArray(SERIALIZED_ULONG_SIZE)
     for (i in 0 until SERIALIZED_ULONG_SIZE) {
@@ -69,6 +72,7 @@ fun serializeULong(value: ULong): ByteArray {
     return bytes.toByteArray()
 }
 
+@OptIn(ExperimentalUnsignedTypes::class)
 fun deserializeULong(buffer: ByteArray, offset: Int = 0): ULong {
     val ubuffer = buffer.toUByteArray()
     var result = 0uL
@@ -96,6 +100,7 @@ fun serializeUChar(char: UByte): ByteArray {
     return byteArrayOf(char.toByte())
 }
 
+@OptIn(ExperimentalUnsignedTypes::class)
 fun deserializeUChar(buffer: ByteArray, offset: Int = 0): UByte {
     val ubuffer = buffer.toUByteArray()
     return ubuffer[offset]

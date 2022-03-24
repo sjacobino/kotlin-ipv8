@@ -243,6 +243,7 @@ abstract class Community : Overlay {
         return serializePacket(MessageId.PUNCTURE_REQUEST, payload, sign = false)
     }
 
+
     /**
      * Serializes a payload into a binary packet that can be sent over the transport.
      *
@@ -296,7 +297,7 @@ abstract class Community : Overlay {
         recipient: Peer? = null
     ): ByteArray {
         var packet = prefix
-        packet += messageId.toChar().toByte()
+        packet += messageId.toChar().code.toByte()
 
         if (encrypt && recipient == null) {
             throw IllegalArgumentException("Recipient must be provided for encryption")
@@ -347,6 +348,7 @@ abstract class Community : Overlay {
             onPunctureRequest(packet.source, payload)
         }
     }
+
 
     /**
      * Request handling
