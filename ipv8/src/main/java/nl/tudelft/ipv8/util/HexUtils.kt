@@ -24,8 +24,17 @@ fun ByteArray.toHex(): String {
  * Converts a hex string to ByteArray.
  * https://gist.github.com/fabiomsr/845664a9c7e92bafb6fb0ca70d4e44fd
  */
-fun String.hexToBytes(): ByteArray {
-    if (length % 2 != 0) throw IllegalArgumentException("String length must be even")
+fun String.hexToBytes(allowZero: Boolean = false): ByteArray {
+    if (length % 2 != 0) {
+        if (allowZero && this == "0") {
+            val result = ByteArray(1).apply {
+                this[0] = Integer.valueOf(0).toByte()
+            }
+            return result
+        } else {
+            throw IllegalArgumentException("String length must be even ($this)")
+        }
+    }
 
     val result = ByteArray(length / 2)
 
