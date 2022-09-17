@@ -108,7 +108,7 @@ class AttestationCommunity(val database: AttestationStore) : Community() {
 
     }
 
-    private fun getIdAlgorithm(idFormat: String): IdentityAlgorithm {
+    fun getIdAlgorithm(idFormat: String): IdentityAlgorithm {
         return this.schemaManager.getAlgorithmInstance(idFormat)
     }
 
